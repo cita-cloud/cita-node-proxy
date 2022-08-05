@@ -1,0 +1,15 @@
+apiVersion: v2
+name: cita-node-proxy
+description: A Helm chart for Cita-Cloud Node Proxy
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+kubeVersion: ">=1.18.0-0"
+home: https://github.com/cita-cloud/cita-node-proxy
+
+maintainers:
+  - email: contact@rivtower.com
+    name: Rivtower Technologies
+
+keywords:
+  - cita-cloud

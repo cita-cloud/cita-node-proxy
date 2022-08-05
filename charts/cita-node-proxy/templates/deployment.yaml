@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cita-node-proxy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: cita-node-proxy
+    {{- include "cita-node-proxy.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: cita-node-proxy
+      {{- include "cita-node-proxy.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: cita-node-proxy
+        {{- include "cita-node-proxy.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - command:
+            - /cita-node-proxy
+          image: {{ .Values.image.registry }}/{{ .Values.image.repository }}/cita-node-proxy:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: proxy
+          ports:
+            - containerPort: 8080
+              name: proxy
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

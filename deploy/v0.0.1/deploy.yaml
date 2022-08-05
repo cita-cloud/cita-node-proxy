@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cita-node-proxy
+  labels:
+    app.kubernetes.io/component: cita-node-proxy
+    app.kubernetes.io/instance: cita-node-proxy
+    app.kubernetes.io/name: cita-node-proxy
+spec:
+  selector:
+    matchLabels:
+      app: cita-node-proxy
+      app.kubernetes.io/instance: cita-node-proxy
+      app.kubernetes.io/name: cita-node-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cita-node-proxy
+        app.kubernetes.io/instance: cita-node-proxy
+        app.kubernetes.io/name: cita-node-proxy
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: cita-node-sa
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - command:
+            - /cita-node-proxy
+          image: docker.io/citacloud/cita-node-proxy:v0.0.1
+          imagePullPolicy: IfNotPresent
+          name: proxy
+          ports:
+            - containerPort: 8080
+              name: proxy
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              # resources.limits.cpu -- cpu limit
+              cpu: 500m
+              # resources.limits.memory -- memory limit
+              memory: 128Mi
+            requests:
+              # resources.requests.cpu -- cpu request
+              cpu: 10m
+              # resources.requests.memory -- memory request
+              memory: 64Mi
