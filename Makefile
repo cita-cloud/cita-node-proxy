@@ -1,5 +1,5 @@
 # Image URL to use all building/pushing image targets
-DEV_IMG ?= registry.devops.rivtower.com/cita-cloud/operator/cita-node-proxy:v0.0.1
+DEV_IMG ?= registry.devops.rivtower.com/cita-cloud/cita-node-proxy:v0.0.1
 IMG ?= citacloud/cita-node-proxy
 
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
